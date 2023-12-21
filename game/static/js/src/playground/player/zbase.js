@@ -41,8 +41,10 @@ class Player extends AcGameObject{
             } else if(e.which === 1){
                 if(outer.cur_skill === "fireball")
                 {
+                    console.log("skill == fireball");
                     outer.shoot_fireball(e.clientX, e.clientY);
                 }
+                outer.cur_skill = "";
             }
         });
 
@@ -57,7 +59,15 @@ class Player extends AcGameObject{
     }
 
     shoot_fireball(tx, ty){
-        console.log("shoot fireball", tx, ty);
+        let x = this.x, y = this.y;
+        console.log("shoot fireball", x, y);
+        let radius = this.playground.height * 0.01;
+        let angle = Math.atan2(ty -  this.y, tx - this.x);
+        let vx = Math.cos(angle), vy = Math.sin(angle);
+        let color = "orange";
+        let move_length = this.playground.height * 1.5;
+        let speed = this.playground.height * 0.5;
+        new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length);
     }
 
     get_dist(x, y, tx, ty){

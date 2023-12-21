@@ -84,7 +84,7 @@ class AcGameObject{
 
     destroy(){  // 将对象销毁
         // js中一个对象只要没有变量存储，该对象就被删除掉了
-        on_destroy();
+        this.on_destroy();
         for (let i = 0; i < AC_GAME_OBJECTS.length; i ++){
         if(AC_GAME_OBJECTS[i] === this){
                 AC_GAME_OBJECTS.splice(i, this);
@@ -122,13 +122,18 @@ class FireBall extends AcGameObject{
     {
         super();
         this.playground = playground;
+        this.ctx = this.playground.game_map.ctx;
         this.player = player;
         this.x = x;
         this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        console.log("fireball args", x, y);
         this.radius = radius;
         this.color = color;
         this.speed = speed;
         this.move_length = move_length;  // 火球的射程, 火球的移动距离
+        console.log("init fireball this.move_length",this.move_length);
         this.eps = 0.1;
     }
 
@@ -138,13 +143,15 @@ class FireBall extends AcGameObject{
 
     update()
     {
-        if(move_lenght < this.eps)
+        if(this.move_length < this.eps)
         {
             this.destroy();
             return false;
         }
 
         let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
+        console.log("fireball update moved", moved);
+        console.log("fireball update pos", this.x, this.y);
         this.x += this.vx * moved;
         this.y += this.vy * moved;
         this.move_length -= moved;
@@ -152,8 +159,7 @@ class FireBall extends AcGameObject{
         this.render();
     }
 
-    render()
-    {
+    render(){
         this.ctx.beginPath();
         this.ctx.arc(this.x, this.y, this.radius, Math.PI * 2, false);
         this.ctx.fillStyle = this.color;
@@ -230,8 +236,10 @@ class Player extends AcGameObject{
             } else if(e.which === 1){
                 if(outer.cur_skill === "fireball")
                 {
+                    console.log("skill == fireball");
                     outer.shoot_fireball(e.clientX, e.clientY);
                 }
+                outer.cur_skill = "";
             }
         });
 
@@ -246,7 +254,15 @@ class Player extends AcGameObject{
     }
 
     shoot_fireball(tx, ty){
-        console.log("shoot fireball", tx, ty);
+        let x = this.x, y = this.y;
+        console.log("shoot fireball", x, y);
+        let radius = this.playground.height * 0.01;
+        let angle = Math.atan2(ty -  this.y, tx - this.x);
+        let vx = Math.cos(angle), vy = Math.sin(angle);
+        let color = "orange";
+        let move_length = this.playground.height * 1.5;
+        let speed = this.playground.height * 0.5;
+        new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length);
     }
 
     get_dist(x, y, tx, ty){

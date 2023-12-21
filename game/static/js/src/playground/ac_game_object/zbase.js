@@ -23,7 +23,7 @@ class AcGameObject{
 
     destroy(){  // 将对象销毁
         // js中一个对象只要没有变量存储，该对象就被删除掉了
-        on_destroy();
+        this.on_destroy();
         for (let i = 0; i < AC_GAME_OBJECTS.length; i ++){
         if(AC_GAME_OBJECTS[i] === this){
                 AC_GAME_OBJECTS.splice(i, this);
